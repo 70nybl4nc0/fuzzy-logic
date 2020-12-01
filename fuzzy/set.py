@@ -64,7 +64,9 @@ class And(FuzzySet):
         self.right = right
 
     def __call__(self, *args, **kwargs):
-        return min(self.left(*args, **kwargs), self.right(*args, **kwargs))
+        left = self.left(*args, **kwargs)
+        right = self.right(*args, **kwargs)
+        return min(left, right)
 
 
 class Or(FuzzySet):
@@ -73,7 +75,9 @@ class Or(FuzzySet):
         self.right = right
 
     def __call__(self, *args, **kwargs):
-        return max(self.left(*args, **kwargs), self.right(*args, **kwargs))
+        left = self.left(*args, **kwargs)
+        right = self.right(*args, **kwargs)
+        return max(left, right)
 
 
 class Negation(FuzzySet):

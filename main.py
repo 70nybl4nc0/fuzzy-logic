@@ -16,9 +16,9 @@ class Tamano:
 tamano = LinguisticVariable(
     "Tamano",
     {
-        Tamano.Pequena: Z(0, 5),
-        Tamano.Mediana: Gaussiana(5, 3),
-        Tamano.Grande: S(5, 10),
+        Tamano.Pequena: Z(0, 8),
+        Tamano.Mediana: Gaussiana(5, 4),
+        Tamano.Grande: S(2, 10),
     },
 )
 
@@ -33,8 +33,8 @@ class Color:
 color = LinguisticVariable(
     "Color",
     {
-        Color.Oscura: L(2, 6),
-        Color.Clara: Gamma(4, 8),
+        Color.Oscura: L(2, 10),
+        Color.Clara: Gamma(0, 8),
     },
 )
 
@@ -50,8 +50,8 @@ class Suavidad:
 suavidad = LinguisticVariable(
     "Suavidad",
     {
-        Suavidad.Blanda: Z(0, 8),
-        Suavidad.Dura: S(2, 10),
+        Suavidad.Blanda: Z(0, 10),
+        Suavidad.Dura: S(0, 10),
     },
 )
 
@@ -67,9 +67,9 @@ class Calidad:
 calidad = LinguisticVariable(
     "Calidad",
     {
-        Calidad.Mala: L(2, 4),
+        Calidad.Mala: L(1, 4),
         Calidad.Regular: Lambda(2, 5, 8),
-        Calidad.Buena: Gamma(6, 10),
+        Calidad.Buena: Gamma(5, 9),
     },
 )
 
@@ -152,40 +152,46 @@ restaurantSystem.add_rule(rule_9)
 restaurantSystem.add_rule(rule_10)
 
 
-# print("\nTest 1: Tamaño 3, Color 7, Suavidad 5")
+print("\nTest 1: Tamaño 3, Color 7, Suavidad 5")
 
-# (mamd,) = mamdani(restaurantSystem, 3, 7, 5)
-# (lars,) = larsen(restaurantSystem, 3, 7, 5)
+(mamd,) = mamdani(restaurantSystem, 3, 7, 5)
+(lars,) = larsen(restaurantSystem, 3, 7, 5)
 
-# print(f"Mamdani: {mamd.centroid(interval(0, 10))}")
-# print(f"Larsen: {lars.centroid(interval(0, 10))}")
+print(f"Mamdani: {mamd.bisect(interval(0, 10))}")
+print(f"Larsen: {lars.bisect(interval(0, 10))}")
 
+# mamd.plot(interval(0, 10))
+# lars.plot(interval(0, 10))
 
-print("\nTest 2: Tamaño 9, Color 1, Suavidad 1")
+print("\nTest 2: Tamaño 4, Color 1, Suavidad 1")
 
-mmds = mamdani(restaurantSystem, 9, 1, 1)
-larss = larsen(restaurantSystem, 9, 1, 1)
+(mamd,) = mamdani(restaurantSystem, 9, 1, 1)
+(mamd,) = larsen(restaurantSystem, 9, 1, 1)
 
-# mamd.plot(interval(0, 1))
-# lars.plot(interval(0, 1))
+print(f"Mamdani: {mamd.bisect(interval(0, 10))}")
+print(f"Larsen: {lars.bisect(interval(0, 10))}")
 
-
-# print(f"Mamdani: {mamd.centroid(interval(0, 10))}")
-# print(f"Larsen: {lars.centroid(interval(0, 10))}")
-
+# mamd.plot(interval(0, 10))
+# lars.plot(interval(0, 10))
 
 print("\nTest 3: Tamaño 5, Color 1, Suavidad 10")
 
 (mamd,) = mamdani(restaurantSystem, 5, 1, 10)
 (lars,) = larsen(restaurantSystem, 5, 1, 10)
 
-print(f"Mamdani: {mamd.centroid(interval(0, 10))}")
-print(f"Larsen: {lars.centroid(interval(0, 10))}")
+print(f"Mamdani: {mamd.bisect(interval(0, 10))}")
+print(f"Larsen: {lars.bisect(interval(0, 10))}")
+
+# mamd.plot(interval(0, 10))
+# lars.plot(interval(0, 10))
 
 print("\nTest 4: Tamaño 4, Color 4, Suavidad 5")
 
 (mamd,) = mamdani(restaurantSystem, 4, 4, 5)
 (lars,) = larsen(restaurantSystem, 4, 4, 5)
 
-print(f"Mamdani: {mamd.centroid(interval(0, 10))}")
-print(f"Larsen: {lars.centroid(interval(0, 10))}")
+print(f"Mamdani: {mamd.bisect(interval(0, 10))}")
+print(f"Larsen: {lars.bisect(interval(0, 10))}")
+
+# mamd.plot(interval(0, 10))
+# lars.plot(interval(0, 10))

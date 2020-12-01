@@ -53,5 +53,32 @@ Las reglas que usaremos para este sistema son:
 
 [^1]: El tamaño no importa ;)  
 
+## 3. Métodos de inferencia y Agregación
+
+Para modelar los problemas nuestra biblioteca posee variadas herramientas. En el archivo functions.py se encuentran modeladas diferentes funciones comúnmente usadas como función de membresía para conjuntos difusos. También nuestras reglas gozan del uso de predicados disjuntos y conjuntos, con operadores de Unión(`|`), Intersección (`&`) o Complemento (`!`).
+
+Los métodos para realizar la defusificacion están insertados de forma implícita en los valores lingüísticos.
+
+En el archivo inference.py se encuentran también dos métodos de inferencia implementados. Mamdani y Larsen. 
+
+Los ejemplos de uso se encuentran en el archivo main.py el cual es usado para la solución de nuestro problema.
+
+## Pruebas
+
+Luego de realizar variadas pruebas, estos fueron los resultados arrojados:
+
+- Prueba 1. Tamaño 3, Color 7, Suavidad 5
+  - Mamdani: 5.055
+  - Larsen: 5.072
+- Prueba 2. Tamaño 4, Color 1, Suavidad 1
+  - Mamdani: 3.785
+  - Larsen: 5.072
+- Prueba 3. Tamaño 5, Color 1, Suavidad 10
+  - Mamdani: 4.79
+  - Larsen: 4.842
+- Prueba 4. Tamaño 4, Color 4, Suavidad 5
+  - Mamdani: 5.066
+  - Larsen: 50.98
+
 
 

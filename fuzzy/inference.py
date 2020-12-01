@@ -6,6 +6,20 @@ from .funtions import Max, Min, Ploteable  # noqa: F401
 from .set import FuzzySet
 
 
+def Min(f, v):
+    def inner(*args, **kwargs):
+        return min(f(*args, **kwargs), v)
+
+    return inner
+
+
+def Mult(f, v):
+    def inner(*args, **kwargs):
+        return f(*args, **kwargs) * v
+
+    return inner
+
+
 class LinguisticVariable:
     def __init__(self, name: str, linguistic_values: dict):
         self.name = name
@@ -66,17 +80,16 @@ def mamdani(fuzzysystem: FuzzySystem, *values):
     agregation = {var.name: [] for var in fuzzysystem.output_variables}
     for rule in fuzzysystem.rules:
         v = rule.antecedent(**vector)
-        rule.antecedent.plot(interval(0, 10))
+        # rule.antecedent.plot(interval(0, 10))
         for c in rule.consequences:
-            print(v)
-            c.plot(interval(0, 10))
-            agregation[c.linguistic_variable].append(
-                lambda *args, **kwargs: min(c.membership_function(*args, **kwargs), v)
-            )
-    for a in agregation:
-        for f in agregation[a]:
-            p = FuzzySet("Agregation", "Agregation", f)
-            p.plot(interval(0, 10))
+            # print(v)
+            # c.plot(interval(0, 10))
+            agregation[c.linguistic_variable].append(Min(c.membership_function, v))
+    # for a in agregation:
+    #     fs = agregation[a]
+    #     for f in fs:
+    #         p = FuzzySet("Agregation", "Agregation", f)
+    #         p.plot(interval(0, 10))
 
     return [
         FuzzySet(var.name, "Mamdani", Max(*agregation[var.name]))
@@ -92,9 +105,7 @@ def larsen(fuzzysystem: FuzzySystem, *values):
     for rule in fuzzysystem.rules:
         v = rule.antecedent(**vector)
         for c in rule.consequences:
-            agregation[c.linguistic_variable].append(
-                lambda *args, **kwargs: v * c.membership_function(*args, **kwargs)
-            )
+            agregation[c.linguistic_variable].append(Mult(c.membership_function, v))
     return [
         FuzzySet(var.name, "Larsen", Max(*agregation[var.name]))
         for var in fuzzysystem.output_variables
