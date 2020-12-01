@@ -13,9 +13,9 @@ class FuzzySet(Ploteable):
         except KeyError:
             return self.membership_function(args[0])
 
-    def mom(self, universe):
+    def mediat(self, domain):
         maxu, maxvs = 0, []
-        for v in universe:
+        for v in domain:
             u = self.membership_function(v)
             if u > maxu:
                 maxvs = [v]
@@ -24,8 +24,8 @@ class FuzzySet(Ploteable):
                 maxvs.append(v)
         return sum(maxvs) / len(maxvs)
 
-    def coa(self, universe):
-        values = list(universe)
+    def centroid(self, domain):
+        values = list(domain)
         num, den = 0, 0
         for v in values:
             u = self.membership_function(v)
@@ -33,7 +33,7 @@ class FuzzySet(Ploteable):
             den += u
         return num / den if den else (values[0] + values[-1]) / 2
 
-    def boa(self, universe):
+    def bisect(self, universe):
         values = list(universe)
         images = [self.membership_function(v) for v in values]
         segments = [

@@ -1,5 +1,5 @@
 from fuzzy.funtions import Gamma, Gaussiana, L, Lambda, S, Z
-from fuzzy.inference import FuzzySystem, LinguisticVariable, Rule
+from fuzzy.inference import FuzzySystem, LinguisticVariable, Rule, larsen, mamdani
 
 
 def interval(a, b, points=10000):
@@ -7,98 +7,185 @@ def interval(a, b, points=10000):
     return [a + i * step for i in range(points)] + [b]
 
 
-class Comida:
-    Rancia = "Rancia"
-    Deliciosa = "Deliciosa"
+class Tamano:
+    Pequena = "Pequeña"
+    Mediana = "Mediana"
+    Grande = "Grande"
 
 
-comida = LinguisticVariable(
-    "Comida",
+tamano = LinguisticVariable(
+    "Tamano",
     {
-        Comida.Rancia: L(0, 5),
-        Comida.Deliciosa: Gamma(4, 8),
+        Tamano.Pequena: Z(0, 5),
+        Tamano.Mediana: Gaussiana(5, 3),
+        Tamano.Grande: S(5, 10),
     },
 )
 
-# comida.plot(interval(0, 10))
+# tamano.plot(interval(0, 10))
 
 
-class Servicio:
-    Pobre = "Pobre"
-    Bueno = "Bueno"
-    Excelente = "Excelente"
+class Color:
+    Oscura = "Oscura"
+    Clara = "Clara"
 
 
-servicio = LinguisticVariable(
-    "Servicio",
+color = LinguisticVariable(
+    "Color",
     {
-        Servicio.Pobre: Z(0, 5),
-        Servicio.Bueno: Gaussiana(5, 3),
-        Servicio.Excelente: S(5, 10),
+        Color.Oscura: L(2, 6),
+        Color.Clara: Gamma(4, 8),
     },
 )
 
 
-# servicio.plot(interval(0, 10))
+# color.plot(interval(0, 10))
 
 
-class Propina:
-    Tacaña = "Tacaña"
-    Promedio = "Promedio"
-    Generosa = "Generosa"
+class Suavidad:
+    Blanda = "Blanda"
+    Dura = "Dura"
 
 
-propina = LinguisticVariable(
-    "Propina",
+suavidad = LinguisticVariable(
+    "Suavidad",
     {
-        Propina.Tacaña: Lambda(0, 6.25, 12.5),
-        Propina.Promedio: Lambda(6.25, 12.5, 18.75),
-        Propina.Generosa: Lambda(12.5, 18.75, 25),
+        Suavidad.Blanda: Z(0, 8),
+        Suavidad.Dura: S(2, 10),
     },
 )
 
-# propina.plot(interval(0, 25))
+# suavidad.plot(interval(0, 10))
 
 
-# R1 : Si Servicio es Pobre ∨ Comida es Rancia −→ Propina es Taca˜na
-# R2 : Si Servicio es Bueno −→ Propina es Promedio
-# R3 : Si Servicio es Excelente ∨ Comida es Deliciosa −→ Propina es Generosa
+class Calidad:
+    Mala = "Mala"
+    Regular = "Regular"
+    Buena = "Buena"
 
-rule1 = Rule(
-    servicio.get(Servicio.Pobre) | comida.get(Comida.Rancia),
-    propina.get(Propina.Tacaña),
+
+calidad = LinguisticVariable(
+    "Calidad",
+    {
+        Calidad.Mala: L(2, 4),
+        Calidad.Regular: Lambda(2, 5, 8),
+        Calidad.Buena: Gamma(6, 10),
+    },
 )
 
-rule11 = Rule(
-    servicio.get(Servicio.Pobre) & comida.get(Comida.Rancia),
-    propina.get(Propina.Tacaña),
+# calidad.plot(interval(0, 10))
+
+# 1. Si el Color es oscuro y la Suavidad es blanda, entonces la Calidad es Mala
+# 2. Si el Tamaño es pequeño, y de Color oscuro, entonces la Calidad es Mala
+# 3. Si el Tamaño es pequeño y de Suavidad Dura y de Color Blanco,
+#    entonces la calidad es Regular
+# 4. Si el Color es claro y el tamaño mediano, entonces la Calidad es Regular
+# 5. Si la Suavidad es dura y el Color es oscuro, entonces la Calidad es Regular
+# 6. Si el Tamaño[^1] es grande, el Color claro, entonces la Calidad es Buena
+# 7. Si el Tamaño es mediano, la Suavidad dura y el Color claro,
+#    entonces la Calidad es Buena
+
+rule_1 = Rule(
+    color.get(Color.Oscura) & suavidad.get(Suavidad.Blanda),
+    calidad.get(Calidad.Mala),
 )
 
-rule2 = Rule(servicio.get(Servicio.Bueno), propina.get(Propina.Promedio))
-
-rule3 = Rule(
-    servicio.get(Servicio.Excelente) | comida.get(Comida.Deliciosa),
-    propina.get(Propina.Generosa),
+rule_2 = Rule(
+    color.get(Color.Oscura) & tamano.get(Tamano.Pequena),
+    calidad.get(Calidad.Mala),
 )
 
-rule1.antecedent.plot(interval(0, 10))
-# rule11.antecedent.plot(interval(0, 10))
+rule_3 = Rule(
+    tamano.get(Tamano.Pequena) & suavidad.get(Suavidad.Blanda),
+    calidad.get(Calidad.Mala),
+)
+
+rule_4 = Rule(
+    tamano.get(Tamano.Pequena) & suavidad.get(Suavidad.Dura) & color.get(Color.Clara),
+    calidad.get(Calidad.Regular),
+)
+
+rule_5 = Rule(
+    color.get(Color.Clara) & tamano.get(Tamano.Mediana),
+    calidad.get(Calidad.Regular),
+)
+
+rule_6 = Rule(
+    color.get(Color.Oscura) & suavidad.get(Suavidad.Dura),
+    calidad.get(Calidad.Regular),
+)
+
+rule_7 = Rule(
+    color.get(Color.Clara) & suavidad.get(Suavidad.Dura),
+    calidad.get(Calidad.Regular),
+)
+
+rule_8 = Rule(
+    color.get(Color.Oscura) & tamano.get(Tamano.Grande),
+    calidad.get(Calidad.Regular),
+)
+
+rule_9 = Rule(
+    color.get(Color.Clara) & tamano.get(Tamano.Grande),
+    calidad.get(Calidad.Buena),
+)
+
+rule_10 = Rule(
+    color.get(Color.Clara) & suavidad.get(Suavidad.Dura) & tamano.get(Tamano.Mediana),
+    calidad.get(Calidad.Buena),
+)
+
+# rule1.antecedent.plot(interval(0, 10))
+
+restaurantSystem = FuzzySystem(input=(tamano, color, suavidad), output=(calidad,))
 
 
-# rule2.antecedent.plot(interval(0, 10))
-# rule3.antecedent.plot(interval(0, 10))
+restaurantSystem.add_rule(rule_1)
+restaurantSystem.add_rule(rule_2)
+restaurantSystem.add_rule(rule_3)
+restaurantSystem.add_rule(rule_4)
+restaurantSystem.add_rule(rule_5)
+restaurantSystem.add_rule(rule_6)
+restaurantSystem.add_rule(rule_7)
+restaurantSystem.add_rule(rule_8)
+restaurantSystem.add_rule(rule_9)
+restaurantSystem.add_rule(rule_10)
 
 
-restaurantSystem = FuzzySystem(input=(comida, servicio), output=(propina,))
+# print("\nTest 1: Tamaño 3, Color 7, Suavidad 5")
+
+# (mamd,) = mamdani(restaurantSystem, 3, 7, 5)
+# (lars,) = larsen(restaurantSystem, 3, 7, 5)
+
+# print(f"Mamdani: {mamd.centroid(interval(0, 10))}")
+# print(f"Larsen: {lars.centroid(interval(0, 10))}")
 
 
-restaurantSystem.add_rule(rule1)
-# restaurantSystem.add_rule(rule2)
-# restaurantSystem.add_rule(rule3)
+print("\nTest 2: Tamaño 9, Color 1, Suavidad 1")
 
-# HatSelector.add_rule(rule4)
+mmds = mamdani(restaurantSystem, 9, 1, 1)
+larss = larsen(restaurantSystem, 9, 1, 1)
+
+# mamd.plot(interval(0, 1))
+# lars.plot(interval(0, 1))
 
 
-(md,) = restaurantSystem.mamdani(3, 8)
+# print(f"Mamdani: {mamd.centroid(interval(0, 10))}")
+# print(f"Larsen: {lars.centroid(interval(0, 10))}")
 
-md.plot(interval(0, 25))
+
+print("\nTest 3: Tamaño 5, Color 1, Suavidad 10")
+
+(mamd,) = mamdani(restaurantSystem, 5, 1, 10)
+(lars,) = larsen(restaurantSystem, 5, 1, 10)
+
+print(f"Mamdani: {mamd.centroid(interval(0, 10))}")
+print(f"Larsen: {lars.centroid(interval(0, 10))}")
+
+print("\nTest 4: Tamaño 4, Color 4, Suavidad 5")
+
+(mamd,) = mamdani(restaurantSystem, 4, 4, 5)
+(lars,) = larsen(restaurantSystem, 4, 4, 5)
+
+print(f"Mamdani: {mamd.centroid(interval(0, 10))}")
+print(f"Larsen: {lars.centroid(interval(0, 10))}")
